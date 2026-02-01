@@ -1,0 +1,138 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: microservices-demo
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: |
+      frontend=667516053986.dkr.ecr.ap-south-1.amazonaws.com/frontend
+      cartservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/cartservice
+      checkoutservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/checkoutservice
+      currencyservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/currencyservice
+      emailservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/emailservice
+      paymentservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/paymentservice
+      productcatalogservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/productcatalogservice
+      recommendationservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/recommendationservice
+      shippingservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/shippingservice
+      adservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/adservice
+    argocd-image-updater.argoproj.io/app.update-strategy: latest
+
+
+
+
+
+spec:
+  project: default
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+  sources:
+
+  # Redis
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/redis
+    helm:
+      releaseName: redis-cart
+      valueFiles:
+        - ../../values/redis-values.yaml
+
+  # Frontend
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: frontendservice
+      valueFiles:
+        - ../../values/frontend-values.yaml
+
+  # Cart
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: cartservice
+      valueFiles:
+        - ../../values/cart-service-values.yaml
+
+  # Payment
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: paymentservice
+      valueFiles:
+        - ../../values/payment-service-values.yaml
+
+  # Shipping
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: shippingservice
+      valueFiles:
+        - ../../values/shipping-service-values.yaml
+
+  # Email
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: emailservice
+      valueFiles:
+        - ../../values/email-service-values.yaml
+
+  # Recommendation
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: recommendationservice
+      valueFiles:
+        - ../../values/recommendation-service-values.yaml
+
+  # Currency
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: currencyservice
+      valueFiles:
+        - ../../values/currency-service-values.yaml
+
+  # Product Catalog
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: productcatalogservice
+      valueFiles:
+        - ../../values/productcatalog-service-values.yaml
+
+  # Checkout
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: checkoutservice
+      valueFiles:
+        - ../../values/checkout-service-values.yaml
+
+  # Ad Service
+  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+    targetRevision: main
+    path: charts/microservice
+    helm:
+      releaseName: adservice
+      valueFiles:
+        - ../../values/ad-service-values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
