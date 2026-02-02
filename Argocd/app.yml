@@ -18,6 +18,18 @@ metadata:
       adservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/adservice
     argocd-image-updater.argoproj.io/app.update-strategy: latest
 
+    argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/cartservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/checkoutservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/currencyservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/emailservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/paymentservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/productcatalogservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/recommendationservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/shippingservice.allow-tags: regexp:^[a-f0-9]{40}$
+    argocd-image-updater.argoproj.io/adservice.allow-tags: regexp:^[a-f0-9]{40}$
+
+
 
 
 
