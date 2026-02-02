@@ -1,13 +1,30 @@
 ############################################
-# Get EKS OIDC Provider (Direct Resource)
+# Fetch EKS OIDC TLS Certificate (Dynamic)
 ############################################
 
-data "aws_iam_openid_connect_provider" "eks" {
+data "tls_certificate" "eks_oidc" {
   url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
 
 ############################################
-# Local Helper
+# Create IAM OIDC Provider (Dynamic)
+############################################
+
+resource "aws_iam_openid_connect_provider" "eks" {
+
+  url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+
+  client_id_list = [
+    "sts.amazonaws.com"
+  ]
+
+  thumbprint_list = [
+    data.tls_certificate.eks_oidc.certificates[0].sha1_fingerprint
+  ]
+}
+
+############################################
+# Local Helper (OIDC URL without https)
 ############################################
 
 locals {
@@ -18,7 +35,7 @@ locals {
 }
 
 ############################################
-# IRSA Role
+# ArgoCD Image Updater IRSA Role
 ############################################
 
 resource "aws_iam_role" "argocd_image_updater_role" {
@@ -34,7 +51,7 @@ resource "aws_iam_role" "argocd_image_updater_role" {
         Effect = "Allow"
 
         Principal = {
-          Federated = data.aws_iam_openid_connect_provider.eks.arn
+          Federated = aws_iam_openid_connect_provider.eks.arn
         }
 
         Action = "sts:AssumeRoleWithWebIdentity"
@@ -50,7 +67,7 @@ resource "aws_iam_role" "argocd_image_updater_role" {
 }
 
 ############################################
-# Attach ECR Permission
+# Attach ECR Read Permission
 ############################################
 
 resource "aws_iam_role_policy_attachment" "argocd_image_updater_ecr" {

@@ -4,7 +4,9 @@ kind: Application
 metadata:
   name: microservices-demo
   namespace: argocd
+
   annotations:
+
     argocd-image-updater.argoproj.io/image-list: |
       frontend=667516053986.dkr.ecr.ap-south-1.amazonaws.com/frontend
       cartservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/cartservice
@@ -16,8 +18,24 @@ metadata:
       recommendationservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/recommendationservice
       shippingservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/shippingservice
       adservice=667516053986.dkr.ecr.ap-south-1.amazonaws.com/adservice
-    argocd-image-updater.argoproj.io/app.update-strategy: latest
 
+    # REQUIRED
+    argocd-image-updater.argoproj.io/update-strategy: latest
+    argocd-image-updater.argoproj.io/write-back-method: git
+
+    # Helm value mapping
+    argocd-image-updater.argoproj.io/frontend.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/cartservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/checkoutservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/currencyservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/emailservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/paymentservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/productcatalogservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/recommendationservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/shippingservice.helm.image-name: appImage
+    argocd-image-updater.argoproj.io/adservice.helm.image-name: appImage
+
+    # Only allow SHA tags
     argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^[a-f0-9]{40}$
     argocd-image-updater.argoproj.io/cartservice.allow-tags: regexp:^[a-f0-9]{40}$
     argocd-image-updater.argoproj.io/checkoutservice.allow-tags: regexp:^[a-f0-9]{40}$
@@ -28,10 +46,6 @@ metadata:
     argocd-image-updater.argoproj.io/recommendationservice.allow-tags: regexp:^[a-f0-9]{40}$
     argocd-image-updater.argoproj.io/shippingservice.allow-tags: regexp:^[a-f0-9]{40}$
     argocd-image-updater.argoproj.io/adservice.allow-tags: regexp:^[a-f0-9]{40}$
-
-
-
-
 
 
 spec:
@@ -46,104 +60,105 @@ spec:
 
   sources:
 
-  # Redis
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/redis
-    helm:
-      releaseName: redis-cart
-      valueFiles:
-        - ../../values/redis-values.yaml
+    # Redis
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/redis
+      helm:
+        releaseName: redis-cart
+        valueFiles:
+          - ../../values/redis-values.yaml
 
-  # Frontend
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: frontendservice
-      valueFiles:
-        - ../../values/frontend-values.yaml
+    # Frontend
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: frontendservice
+        valueFiles:
+          - ../../values/frontend-values.yaml
 
-  # Cart
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: cartservice
-      valueFiles:
-        - ../../values/cart-service-values.yaml
+    # Cart
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: cartservice
+        valueFiles:
+          - ../../values/cart-service-values.yaml
 
-  # Payment
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: paymentservice
-      valueFiles:
-        - ../../values/payment-service-values.yaml
+    # Payment
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: paymentservice
+        valueFiles:
+          - ../../values/payment-service-values.yaml
 
-  # Shipping
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: shippingservice
-      valueFiles:
-        - ../../values/shipping-service-values.yaml
+    # Shipping
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: shippingservice
+        valueFiles:
+          - ../../values/shipping-service-values.yaml
 
-  # Email
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: emailservice
-      valueFiles:
-        - ../../values/email-service-values.yaml
+    # Email
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: emailservice
+        valueFiles:
+          - ../../values/email-service-values.yaml
 
-  # Recommendation
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: recommendationservice
-      valueFiles:
-        - ../../values/recommendation-service-values.yaml
+    # Recommendation
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: recommendationservice
+        valueFiles:
+          - ../../values/recommendation-service-values.yaml
 
-  # Currency
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: currencyservice
-      valueFiles:
-        - ../../values/currency-service-values.yaml
+    # Currency
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: currencyservice
+        valueFiles:
+          - ../../values/currency-service-values.yaml
 
-  # Product Catalog
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: productcatalogservice
-      valueFiles:
-        - ../../values/productcatalog-service-values.yaml
+    # Product Catalog
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: productcatalogservice
+        valueFiles:
+          - ../../values/productcatalog-service-values.yaml
 
-  # Checkout
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: checkoutservice
-      valueFiles:
-        - ../../values/checkout-service-values.yaml
+    # Checkout
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: checkoutservice
+        valueFiles:
+          - ../../values/checkout-service-values.yaml
 
-  # Ad Service
-  - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
-    targetRevision: main
-    path: charts/microservice
-    helm:
-      releaseName: adservice
-      valueFiles:
-        - ../../values/ad-service-values.yaml
+    # Ad Service
+    - repoURL: https://github.com/alshankp/microservices-demo-k8s.git
+      targetRevision: main
+      path: charts/microservice
+      helm:
+        releaseName: adservice
+        valueFiles:
+          - ../../values/ad-service-values.yaml
+
 
   destination:
     server: https://kubernetes.default.svc
